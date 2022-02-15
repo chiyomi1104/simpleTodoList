@@ -1,29 +1,26 @@
 import React from "react"
-import { View, Text, StyleSheet, Button } from "react-native"
+import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native"
 
 export const CompletedTodos = (props) => {
-  const { todos, onClickBack } = props
+  const { todos, onClickBack, onClickDeleteCompleted } = props
   return (
-    <View style={styles.item}>
+    <>
       {todos.map((todo, index) => {
         return (
-          <>
-            <Text key={todo} style={styles.itemText}>
-              {todo}
-            </Text>
+          <View key={index} style={styles.item}>
+            <Text style={styles.itemText}>{todo}</Text>
             <View style={styles.itemRight}>
-              <Button
-                onClick={() => onClickBack(index)}
-                style={{ paddingRight: "2%" }}
-              >
-                ↩️
-              </Button>
-              <Button>🆑</Button>
+              <TouchableOpacity onPress={() => onClickBack(index)}>
+                <Text>↩️</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => onClickDeleteCompleted(index)}>
+                <Text>🆑</Text>
+              </TouchableOpacity>
             </View>
-          </>
+          </View>
         )
       })}
-    </View>
+    </>
   )
 }
 
@@ -67,5 +64,3 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 })
-
-export default CompletedTodos

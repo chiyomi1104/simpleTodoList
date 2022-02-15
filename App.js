@@ -10,74 +10,107 @@ import {
   TouchableOpacity,
   Keyboard,
   Platform,
+  ScrollView,
 } from "react-native"
 import { CompletedTodos } from "./components/CompletedTodos"
-import DeletedTodos from './components/DeletedTodos'
-import Todo from "./components/Todo"
+import { DeletedTodos } from "./components/DeletedTodos"
+import { Todo } from "./components/Todo"
 
 export default function App() {
-  const [task, setTask] = useState()
+  const [todo, setTodo] = useState("")
   const [incompeleteTodos, setIncompleteTodos] = useState([])
   const [completeTodos, setCompleteTodos] = useState([])
+  const [deleteTodos, setDeleteTodos] = useState([])
 
   const onClickAdd = () => {
     Keyboard.dismiss()
-    setIncompleteTodos([...incompeleteTodos, task])
-    setTask(null)
+    if (todo === "") return
+    const newTodos = [...incompeleteTodos, todo]
+    setIncompleteTodos(newTodos)
+    setTodo("")
   }
 
-  const onClickDelete = (index) => {
+  const onClickDeleteCompleted = (index) => {
+    const newCompletedTodos = [...completeTodos]
+    newCompletedTodos.splice(index, 1)
+    const newDeletedTodos = [...deleteTodos, completeTodos[index]]
+
+    setCompleteTodos(newCompletedTodos)
+    setDeleteTodos(newDeletedTodos)
+  }
+
+  const onClickDeleteIncompleted = (index) => {
     const newTodos = [...incompeleteTodos]
     newTodos.splice(index, 1)
+    const newDeletedTodos = [...deleteTodos, incompeleteTodos[index]]
+
     setIncompleteTodos(newTodos)
+    setDeleteTodos(newDeletedTodos)
+  }
+
+  const onClickClearAll = () => {
+    setDeleteTodos((deleteTodos) => !deleteTodos)
   }
 
   const onClickComplete = (index) => {
     const newIncompleteTodos = [...incompeleteTodos]
     newIncompleteTodos.splice(index, 1)
-    const newCompleteTodos = [...completeTodos, incompeleteTodos]
+    const newCompleteTodos = [...completeTodos, incompeleteTodos[index]]
+
+    setIncompleteTodos(newIncompleteTodos)
     setCompleteTodos(newCompleteTodos)
   }
 
   const onClickBack = (index) => {
     const newCompleteTodos = [...completeTodos]
     newCompleteTodos.splice(index, 1)
-    const newIncompleteTodos = [...incompeleteTodos, completeTodos[index]]
+
+    const newIncompleteTodos = [...incompeleteTodos]
+    newIncompleteTodos.push(completeTodos[index] || deleteTodos[index])
+
+    const newDeletedTodos = [...deleteTodos]
+    newDeletedTodos.splice(index, 1)
+
     setCompleteTodos(newCompleteTodos)
     setIncompleteTodos(newIncompleteTodos)
+    setDeleteTodos(newDeletedTodos)
   }
 
   return (
     <>
       <View style={styles.container}>
         <View style={styles.taskWrapper}>
-          <Text style={styles.sectionTitle}>Today's Todos</Text>
-          {/* Imcompleted todos */}
-          {incompeleteTodos.length === 0 && <Text>All todos are cleared!</Text>}
-          <View style={styles.items}>
-            {incompeleteTodos.map((item, index) => {
-              return (
-                <>
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => onClickComplete(index)}
-                  >
-                    <Todo text={item} />
-                  </TouchableOpacity>
-                </>
-              )
-            })}
-          </View>
-          {/* Completed todos */}
-          <Text style={styles.sectionTitle}>Completed Todos</Text>
-          <CompletedTodos
-            todos={completeTodos}
-            
-            onClickBack={onClickBack}
-          />
-          {/* Deleted todos */}
-          <Text style={styles.sectionTitle}>Deleted Todos</Text>
-          <DeletedTodos text={setIncompleteTodos} onClickBack={onClickBack} />
+          <ScrollView>
+            {/* Today's Todos */}
+            <Text style={styles.sectionTitle}>Today's Todos</Text>
+            {incompeleteTodos.length === 0 && (
+              <Text>All todos are cleared! Input new tod</Text>
+            )}
+            <Todo
+              onClickComplete={onClickComplete}
+              onClickDeleteIncompleted={onClickDeleteIncompleted}
+              todos={incompeleteTodos}
+            />
+
+            {/* Completed todos */}
+            {completeTodos.length > 0 && (
+              <Text style={styles.sectionTitle}>Completed Todos</Text>
+            )}
+            <CompletedTodos
+              todos={completeTodos}
+              onClickBack={onClickBack}
+              onClickDeleteCompleted={onClickDeleteCompleted}
+            />
+
+            {/* Deleted todos */}
+            {deleteTodos.length > 0 && (
+              <>
+                <Text style={styles.sectionTitle}>Deleted Todos</Text>
+                <Text onPress={() => onClickClearAll()}>Clear All</Text>
+              </>
+            )}
+            <DeletedTodos todos={deleteTodos} onClickBack={onClickBack} />
+          </ScrollView>
         </View>
 
         {/* Input todos */}
@@ -88,8 +121,8 @@ export default function App() {
           <TextInput
             style={styles.input}
             placeholder={"write a task"}
-            value={task}
-            onChangeText={(text) => setTask(text)}
+            value={todo}
+            onChangeText={(todo) => setTodo(todo)}
           />
           <TouchableOpacity onPress={() => onClickAdd()}>
             <View style={styles.addWrapper}>
@@ -110,18 +143,19 @@ const styles = StyleSheet.create({
   taskWrapper: {
     paddingTop: 40,
     paddingHorizontal: 20,
+    paddingBottom: 100,
   },
   sectionTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    marginTop:10
+    marginTop: 10,
   },
   items: {
     marginTop: 10,
   },
   writeTaskWrapper: {
     position: "absolute",
-    bottom: 60,
+    bottom: 30,
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-around",

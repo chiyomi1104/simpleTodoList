@@ -1,31 +1,37 @@
 import React from "react"
-import { View, Text, StyleSheet, TouchableOpacity, Button } from "react-native"
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 
-const Todo = (props) => {
-  const { todos, onClickComplete, onClickDelete } = props
+export const Todo = (props) => {
+  const { todos, onClickComplete, onClickDeleteIncompleted } = props
   return (
-    <View style={styles.item}>
-      <Text style={styles.itemText}>{props.text}</Text>
-      <View style={styles.itemRight}>
-        <Button onPress={() => onClickComplete(index)} title="✅">
-          ✅
-        </Button>
-        <Button onPress={() => onClickDelete(index)} title="🆑">
-          🆑
-        </Button>
-      </View>
-    </View>
+    <>
+      {todos.map((todo, index) => {
+        return (
+          <View key={index} style={styles.item}>
+            <Text style={styles.itemText}>{todo}</Text>
+            <View style={styles.itemRight}>
+              <TouchableOpacity onPress={() => onClickComplete(index)}>
+                <Text>✅</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => onClickDeleteIncompleted(index)}>
+                <Text>🆑</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )
+      })}
+    </>
   )
 }
 
 const styles = StyleSheet.create({
   item: {
     backgroundColor: "#FFF",
-    padding: "3% 0%",
+    padding: 15,
     borderRadius: 10,
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 5,
   },
   itemLeft: {
@@ -35,12 +41,8 @@ const styles = StyleSheet.create({
   },
   itemRight: {
     flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
   },
   itemText: {
     maxWidth: "80%",
   },
 })
-
-export default Todo

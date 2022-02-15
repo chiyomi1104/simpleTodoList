@@ -1,16 +1,23 @@
 import React from "react"
-import { View, Text, StyleSheet } from "react-native"
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
 
 export const DeletedTodos = (props) => {
+  const { todos, onClickBack } = props
   return (
-    <View style={styles.item}>
-      <Text style={styles.itemText}></Text>
-
-      <View style={styles.itemRight}>
-        <Text >↩️</Text>
-        
-      </View>
-    </View>
+    <>
+      {todos.map((todo, index) => {
+        return (
+          <View key={index} style={styles.item}>
+            <Text style={styles.itemText}>{todo}</Text>
+            <View style={styles.itemRight}>
+              <TouchableOpacity onPress={() => onClickBack(index)}>
+                <Text>↩️</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )
+      })}
+    </>
   )
 }
 
@@ -54,5 +61,3 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 })
-
-export default DeletedTodos
