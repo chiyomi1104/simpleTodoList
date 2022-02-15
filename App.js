@@ -49,7 +49,7 @@ export default function App() {
   }
 
   const onClickClearAll = () => {
-    setDeleteTodos((deleteTodos) => !deleteTodos)
+    setDeleteTodos([])
   }
 
   const onClickComplete = (index) => {
