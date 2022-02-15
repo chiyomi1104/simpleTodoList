@@ -104,10 +104,12 @@ export default function App() {
 
             {/* Deleted todos */}
             {deleteTodos.length > 0 && (
-              <>
+              <View style={{ flexDirection: "row", alignItems:'center', justifyContent:'space-between' }}>
                 <Text style={styles.sectionTitle}>Deleted Todos</Text>
-                <Text onPress={() => onClickClearAll()}>Clear All</Text>
-              </>
+                <Text style={styles.clearAll} onPress={() => onClickClearAll()}>
+                  Clear All
+                </Text>
+              </View>
             )}
             <DeletedTodos todos={deleteTodos} onClickBack={onClickBack} />
           </ScrollView>
@@ -148,10 +150,11 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    marginTop: 10,
+    marginTop: 20,
+    marginBottom: 15,
   },
   items: {
-    marginTop: 10,
+    marginTop: 20,
   },
   writeTaskWrapper: {
     position: "absolute",
@@ -179,6 +182,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderColor: "#C0C0C0",
     borderWidth: 1,
+  },
+  clearAll: {
+    color: "red",
+    marginTop: 10,
   },
   addText: {},
 })
